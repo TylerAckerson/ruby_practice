@@ -1,5 +1,3 @@
-require 'byebug'
-
 def merge_sort(array)
   return array if array.length < 2
 
@@ -29,7 +27,6 @@ def merge(array1, array2)
 
   merged.concat(array1).concat(array2)
 end
-
 
 def quick_sort(array)
   return array if array.length < 2
@@ -71,4 +68,41 @@ def bubble_sort(array)
   end
 
   array
+end
+
+# better quick sort (in place) that won't end up with a degnerate
+# tree in the case the array is already sorted
+class Array
+  def quick_sort!(start = 0, len = length)
+    return self if len < 2 #already sorted
+
+    #randomize to avoid degenerate tree with depth n
+    swap!(start, start + rand(len))
+    pivot_idx = partition!(start, len)
+
+    left_len = pivot_idx - start
+    right_len = len - left_len - 1
+
+    quick_sort!(start, left_len)
+    quick_sort!(pivot_idx + 1, right_len)
+
+    self
+  end
+
+  def partition!(start, len)
+    pivot = start
+    (start + 1...start + len).each do |i|
+      if self[i] < self[pivot]
+        swap!(i, pivot + 1)
+        swap!(pivot, pivot + 1)
+        pivot += 1
+      end
+    end
+
+    pivot
+  end
+
+  def swap!(index1, index2)
+    self[index1], self[index2] = self[index2], self[index1]
+  end
 end
